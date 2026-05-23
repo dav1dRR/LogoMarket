@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+    <div class="back">
+        <li><ion-icon name="arrow-back-outline"></ion-icon><a href="index.htm">Inicio</a></li>
+        
+
+    </div>
+    <div class="container">
+        <div class="container-form">
+            <form action="/login" method="POST" class="sign-in">
+                <img src="Imagenes/LogoMarket2.png" alt="">
+                <h2>Bienvenido de Nuevo</h2>
+                <p>Ingresa a tu cuenta de LogoMarket</p>
+            <span>Correo electronico *</span>
+            <div class="container-input">
+                <ion-icon name="mail-outline"></ion-icon>
+                <input type="text" name="correo" placeholder="tu@Email.com">
+            </div>
+            <span>Contraseña *</span>
+            <div class="container-input">
+                <ion-icon name="lock-closed-outline"></ion-icon>
+                <input type="password" name="password" placeholder="Minimo 6 caracteres">
+            </div>
+            <a href="#">¿Olvidaste tu Contraseña?</a>
+            <button type="submit" class="button">Iniciar Sesion</button>
+            <div class="divider">
+                <p>O continúa con</p>
+            </div>
+             <div class="social-networks">
+                <ion-icon name="logo-facebook"></ion-icon>
+                <ion-icon name="logo-google"></ion-icon>
+                <ion-icon name="logo-instagram"></ion-icon>
+            </div>
+            </form>
+        </div>
+         <div class="container-form">
+            <form action="/registro" method="POST"class="sign-up">
+                <img src="Imagenes/LogoMarket2.png" alt="">
+            <h2>Crear cuenta </h2>
+            <p>Únete a la comunidad de LogoMarket</p>
+            <div class="container-input">
+                <ion-icon name="person-outline"></ion-icon>
+                <input type="text" name="nombre" placeholder="Tu nombre completo">
+            </div>
+            <div><span>Correo electronico *</span></div>
+            <div class="container-input">
+                <ion-icon name="mail-outline"></ion-icon>
+                <input type="text" name="correo" placeholder="tu@Email.com">
+            </div>
+            <span>Contraseña *</span>
+            <div class="container-input">
+                <ion-icon name="lock-closed-outline"></ion-icon>
+                <input type="password" name="password" placeholder="Minimo 6 caracteres">
+            </div>
+            <button type="submit" class="button">Crear cuenta</button>
+            <p>O continúa con</p>
+            <div class="social-networks">
+                <ion-icon name="logo-facebook"></ion-icon>
+                <ion-icon name="logo-google"></ion-icon>
+                <ion-icon name="logo-instagram"></ion-icon>
+            </div>
+            </form>
+        </div> 
+    <div class="container-welcome">
+        <div class="welcome-sign-up welcome">
+            <h3>Registrarse en LogoMarket</h3>
+            <p>Únete a la comunidad de LogoMarket</p>
+            <button type="submit" class="button"id= "btn-sign-up">Registrarse</button>
+        </div>
+         <div class="welcome-sign-in welcome">
+            <h3>Bienvenido</h3>
+            <p>Ingrese con sus datos </p>
+            <button type="submit" class="button"id="btn-sign-in">Iniciar sesion</button>
+
+        </div>
+    </div>
+    
+</div>
+
+
+
+<script src="login.js"></script>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    
+</body>
+</html>
