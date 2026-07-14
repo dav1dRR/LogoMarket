@@ -7,6 +7,7 @@
     text-decoration: none;
     list-style: none;
     font-family: "Poppins", sans-serif;
+
 }
 body {
     background-color: #021347   ;
@@ -14,7 +15,7 @@ body {
     border: 2px solid #CFB53B;
 }
 .container{
-    max-width: 1200px;
+    max-width: 120rem;
     margin: 0 auto;
 }
 
@@ -38,7 +39,7 @@ body {
 }
 .menu {
     position: absolute;
-    top: 20px;
+    top: 3px;
     left: 0;
     right: 0;
     display: flex;
@@ -47,27 +48,59 @@ body {
 }
 .navbar {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    background-color: #011b72;
+    width: 99%;
+    height: 100px ; 
+    
 }
 .menu-1{
     margin-right: 180px;
+  
+    display: flex;
+    gap: 2rem;
+    color: ;
 }
 .menu-1 li{
-    border:2px solid #CFB53B;
-    border-radius: 50px;
+    list-style: none;
 }
-.menu-1 :hover{
-    background-color: #dbc544a1;
-    border-radius: 50px;
-
+.menu a{
+    text-decoration: none;
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    position: relative;
+}
+.menu a:visited{
+    color: #ffff;
+    text-decoration: none;
+}
+.menu a::after{
+    content: '';
+    width: 1.5rem;
+    height: 1px;
+    background-color: #CFB53B;
+    position: absolute;
+    bottom: -3px;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    opacity: 0;
+    transition: all .3s ease;
+}
+.menu a:hover::after{
+    opacity: 1;
+}
+.menu a:hover{
+    color: #CFB53B;
 }
 .menu-2 {
-    margin-left: 20px;
     display: flex;
     align-items: center;
 
 }
 .menu-2 li{
-    border: 2px solid #6b6909;
     border-radius: 20px;
     padding: 2px;
     cursor: pointer;
@@ -76,10 +109,14 @@ body {
 .logo-1{
     width: 0;
     
+    
 }
 .logo-2 {
+    display: flex;
+    justify-content: center;
     width: 160px;
     height: 160px;
+   
     
 }
 
@@ -142,7 +179,6 @@ body {
 .slider-txt h1{
     font-size: 70px;
     color: #ffffff;
-    text-transform: uppercase;
     font-weight: 800;
 }
 
@@ -182,11 +218,13 @@ body {
 
 .products {
     background: blur 10px;background-color: #011b72b0 ;
+    
 }
 .tabs {
     display: flex;
     flex-wrap: wrap;
     padding: 100px 0px;
+    
 }
 .tabs label {
     width: 15%;

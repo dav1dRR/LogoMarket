@@ -83,3 +83,16 @@ app.post("/login", (req, res) => {
 app.listen(3000, () => {
     console.log("Servidor funcionando");
 });
+app.get("/usuarios", (req, res) => {
+
+    conexion.query("SELECT * FROM usuarios", (error, resultados) => {
+
+        if(error){
+            console.log(error);
+        }else{
+            res.json(resultados);
+        }
+
+    });
+
+});
