@@ -14,7 +14,7 @@
     </div>
     <div class="container">
         <div class="container-form">
-            <form action="/login" method="POST" class="sign-in">
+            <form id="loginForm" action="/login" method="POST" class="sign-in">
                 <img src="Imagenes/LogoMarket2.png" alt="">
                 <h2>Bienvenido de Nuevo</h2>
                 <p>Ingresa a tu cuenta de LogoMarket</p>
@@ -30,6 +30,7 @@
             </div>
             <a href="#">¿Olvidaste tu Contraseña?</a>
             <button type="submit" class="button">Iniciar Sesion</button>
+            <p id="mensajeLogin" class="mensaje"></p>
             <div class="divider">
                 <p>O continúa con</p>
             </div>
@@ -41,7 +42,7 @@
             </form>
         </div>
          <div class="container-form">
-            <form action="/registro" method="POST"class="sign-up">
+            <form id="registroForm" action="/registro" method="POST"class="sign-up">
                 <img src="Imagenes/LogoMarket2.png" alt="">
             <h2>Crear cuenta </h2>
             <p>Únete a la comunidad de LogoMarket</p>
@@ -57,10 +58,13 @@
             <span>Contraseña *</span>
             <div class="container-input">
                 <ion-icon name="lock-closed-outline"></ion-icon>
-                <input type="password" name="password" placeholder="Minimo 6 caracteres">
+                <input type="password" name="password" placeholder="Minimo 8 caracteres">
             </div>
             <button type="submit" class="button">Crear cuenta</button>
-            <p>O continúa con</p>
+            <p id="mensajeRegistro" class="mensaje"></p>
+            <div class="divider">
+                <p>O continúa con</p>
+            </div>
             <div class="social-networks">
                 <ion-icon name="logo-facebook"></ion-icon>
                 <ion-icon name="logo-google"></ion-icon>
@@ -81,6 +85,8 @@
 
         </div>
     </div>
+    
+    
     
 </div>
 
