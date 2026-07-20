@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Usuarios</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="container-admin">
+        <header>
+            <h1>Panel de Administración LogoMarket</h1>
+            <img src="Imagenes/LogoMarket2.png" alt="">
+            <a href="index.htm" class="btn-volver">← Volver</a>
+        </header>
+
+        <main>
+            <section class="seccion-usuarios">
+                <h2>Gestionar Usuarios</h2>
+                
+                <div class="tabla-container">
+                    <table id="tablaUsuarios">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Correo</th>
+                                <th>Rol</th>
+                                <th>Fecha Registro</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bodyTabla">
+                            <!-- Se llena con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Modal para Editar -->
+            <div id="modalEditar" class="modal">
+                <div class="modal-contenido">
+                    <span class="cerrar">&times;</span>
+                    <h2>Editar Usuario</h2>
+                    <form id="formEditar">
+                        <input type="hidden" id="editId">
+                        
+                        <label>Nombre:</label>
+                        <input type="text" id="editNombre" required>
+                        
+                        <label>Correo:</label>
+                        <input type="email" id="editCorreo" required>
+                        
+                        <label>Rol:</label>
+                        <select id="editRol">
+                            <option value="cliente">Cliente</option>
+                            <option value="diseñador">Diseñador</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                        
+                        <button type="submit" class="btn-guardar">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal para Confirmar Eliminación -->
+            <div id="modalEliminar" class="modal">
+                <div class="modal-contenido">
+                    <span class="cerrar">&times;</span>
+                    <h2>¿Eliminar usuario?</h2>
+                    <p id="textoEliminar"></p>
+                    <div class="botones">
+                        <button id="btnConfirmarEliminar" class="btn-eliminar">Eliminar</button>
+                        <button class="btn-cancelar cerrar-modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

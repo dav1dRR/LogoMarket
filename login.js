@@ -20,12 +20,12 @@ document.addEventListener("DOMContentLoaded", function() {
         
         loginForm.addEventListener("submit", async function(e) {
             e.preventDefault();
-            console.log("🔐 Submit del login ejecutado");
+            console.log(" Submit del login ejecutado");
 
             const correo = loginForm.querySelector('input[name="correo"]').value.trim();
             const password = loginForm.querySelector('input[name="password"]').value.trim();
             
-            console.log("📤 Enviando:", { correo, password });
+            console.log(" Enviando:", { correo, password });
 
             const respuesta = await fetch("/login", {
                 method: "POST",
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function() {
         
         registroForm.addEventListener("submit", async function(e) {
             e.preventDefault();
-            console.log("📝 Submit del registro ejecutado");
+            console.log(" Submit del registro ejecutado");
 
             const nombre = registroForm.querySelector('input[name="nombre"]').value.trim();
             const correo = registroForm.querySelector('input[name="correo"]').value.trim();
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const mensaje = document.getElementById("mensajeRegistro");
             const texto = await respuesta.text();
 
-            console.log("📥 Respuesta del servidor:", texto);
+            console.log(" Respuesta del servidor:", texto);
 
             mensaje.textContent = texto;
             mensaje.style.display = "block";
