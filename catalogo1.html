@@ -23,11 +23,13 @@
                 </div>
                 <div class="container-user">
                   <i class="fa-solid fa-user"><ion-icon name="person-outline"></ion-icon></i> 
-                   <i class="fa-solid fa-basket-shopping"><ion-icon name="cart-outline"></ion-icon></i> 
-                <div class="content-shopping-cart">
-                    <span class="text">Carrito</span>
-                    <span class="number">(0)</span>
-                    </div>
+                   <a href="Carrito/Carrito.html" class="cart-link">
+                       <i class="fa-solid fa-basket-shopping" id="cart-icon"><ion-icon name="cart-outline"></ion-icon></i>
+                       <div class="content-shopping-cart">
+                           <span class="text">Carrito</span>
+                           <span class="number" id="cart-count">(0)</span>
+                       </div>
+                   </a>
                 </div>
             </div>
         </div>
@@ -46,8 +48,6 @@
                     <input type="search" placeholder="Buscar...">
                     <button class="btn-search">
                         <i><ion-icon name="search-outline"></ion-icon></i>
-                        
-
                     </button>
                 </form>
             </nav>
@@ -252,5 +252,67 @@
         </section>
     </main>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script>
+        const CART_KEY = 'logomarket_cart';
+
+        function getCart() {
+            try {
+                return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+            } catch {
+                return [];
+            }
+        }
+
+        function saveCart(cart) {
+            localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        }
+
+        function updateCartBadge() {
+            const cart = getCart();
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            const cartCountEl = document.getElementById('cart-count');
+            if (cartCountEl) cartCountEl.textContent = `(${totalItems})`;
+        }
+
+        function addToCart(card) {
+            const name = card.querySelector('h3').textContent.trim();
+            const image = card.querySelector('.container-img img').getAttribute('src');
+            const priceRaw = card.querySelector('.price').childNodes[0].textContent.trim();
+            const price = parseFloat(priceRaw.replace('$', ''));
+
+            const cart = getCart();
+            const existing = cart.find(item => item.name === name);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ name, image, price, qty: 1 });
+            }
+            saveCart(cart);
+            updateCartBadge();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartBadge();
+
+            const cartIcon = document.getElementById('cart-icon');
+
+            document.querySelectorAll('.add-cart').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const card = btn.closest('.card-products');
+                    addToCart(card);
+
+                    cartIcon.classList.add('cart-bounce');
+                    cartIcon.addEventListener('animationend', () => {
+                    cartIcon.classList.remove('cart-bounce');
+                    }, { once: true });
+                    
+
+                    btn.classList.add('added');
+                    setTimeout(() => btn.classList.remove('added'), 300);
+                });
+            });
+        });
+    </script>
 </body>
 </html>

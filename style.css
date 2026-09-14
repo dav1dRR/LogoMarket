@@ -225,6 +225,7 @@ body {
     flex-wrap: wrap;
     padding: 100px 0px;
     
+    
 }
 .tabs label {
     width: 15%;
@@ -238,6 +239,7 @@ body {
     font-size: 15px;
     font-weight: 700;
     transition: background ease 0.2s;
+    
 }
 
 .tabs .tab {
@@ -246,6 +248,7 @@ body {
     width: 100%;
     display: none;
     padding-top: 25px;
+    
 }
 .tabs input[type="radio"] {
     display: none;
@@ -356,6 +359,7 @@ body {
 .horario{
     padding: 100px 0px;
     background-color: #0d0d0d;
+    
 }
 .horario-info h2{
     font-size: 75px;
@@ -363,6 +367,7 @@ body {
     font-weight: 800;
     text-transform: uppercase;
     margin-bottom: 50px;
+    text-align: center;
 
 }
 .horario-txt {
@@ -379,6 +384,7 @@ body {
     font-size: 18px;
     color: #a7a7a7;
     margin-bottom: 30px;
+    text-align: center;
 
 }
 .txt p {
@@ -386,6 +392,7 @@ body {
     text-transform: uppercase;
     font-weight: 600;
     margin-bottom: 15px;
+    text-align: center;
 
 }
 .footer{
