@@ -86,13 +86,27 @@ app.post("/login", (req, res) => {
         }
 
         if (resultado.length > 0) {
-            return res.status(200).send("Inicio de sesión exitoso.");
+            const usuario = resultado[0];
+
+            return res.status(200).json({
+            exito: true,
+            mensaje: "Inicio de sesión exitoso.",
+            usuario: {
+            id_usuario: usuario.id_usuario,
+            nombre: usuario.nombre,
+            correo: usuario.correo,
+            rol: usuario.rol
+        }
+    });
+
         } else {
-            return res.status(401).send("Correo o contraseña incorrectos.");
+            return res.status(401).json({
+                exito: false,
+                mensaje: "Correo o contraseña incorrectos."
+            });
         }
     });
 });
-
 
 app.get("/obtener-usuarios", (req, res) => {
     const sql = "SELECT * FROM usuarios ORDER BY id_usuario DESC";

@@ -61,7 +61,7 @@ body {
   
     display: flex;
     gap: 2rem;
-    color: ;
+    color:#CFB53B ;
 }
 .menu-1 li{
     list-style: none;
@@ -557,3 +557,23 @@ body {
     }
 
 }
+#usuarioSesion {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;  
+  gap: 15px;
+}
+
+#usuarioSesion .nombre-usuario {
+  color: #CFB53B;
+  font-weight: 600;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+#usuarioSesion a {
+  color: #ffffff;
+  text-transform: capitalize;
+}
+
+

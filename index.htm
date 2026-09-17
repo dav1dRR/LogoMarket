@@ -30,8 +30,9 @@
           <img class="logo-2" src="Imagenes/LogoMarket2.png" alt="" />
           <div class="menu-2">
             <ul>
-              <li><a href="Login.html">Iniciar sesion</a></li>
-              
+              <li>
+                <div id="usuarioSesion"></div>
+              </li>
             </ul>
             <div class="socials">
               <a href="#">
@@ -52,7 +53,7 @@
             </div>
           </div>
         </nav>
-      </div>
+      </div> 
 
       <div class="header-content container">
         <div class="swiper mySwiper-1">
@@ -458,5 +459,29 @@
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="Logomarket.JS"></script>
+    <script>
+      
+    const usuarioSesion = document.getElementById("usuarioSesion");
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+    if (usuario) {
+        usuarioSesion.innerHTML = `
+            <span class="nombre-usuario"> ${usuario.nombre}</span>
+            <a href="#" onclick="cerrarSesion()">Cerrar sesión</a>
+        `;
+
+    } else {
+
+        usuarioSesion.innerHTML = `
+            <a href="login.html">Iniciar sesión</a>
+        `;
+    }
+
+    function cerrarSesion() {
+        localStorage.removeItem("usuario");
+        window.location.href = "index.htm";
+    }
+</script>
+    </script>
   </body>
 </html>
