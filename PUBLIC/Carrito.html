@@ -9,12 +9,12 @@
 <body>
     <header class="cart-header">
         <div class="container cart-header-inner">
-            <a href="../catalogo1.html" class="back-link">
+            <a href="catalogo1.html" class="back-link">
                 <ion-icon name="arrow-back-outline"></ion-icon>
                 Seguir comprando
             </a>
             <div class="mini-logo">
-                <img src="../Imagenes/LogoMarketLogo.png" alt="">
+                <img src="Imagenes/LogoMarketLogo.png" alt="">
                 <span>LogoMarket</span>
             </div>
         </div>
@@ -113,13 +113,13 @@
                     <div class="cart-empty">
                         <ion-icon name="cart-outline"></ion-icon>
                         <p>Tu carrito está vacío</p>
-                        <a href="../catalogo1.html" class="btn-empty">Ver catálogo</a>
+                        <a href="catalogo1.html" class="btn-empty">Ver catálogo</a>
                     </div>
                 `;
             } else {
                 itemsContainer.innerHTML = cart.map((item, index) => `
                     <article class="cart-item">
-                        <img src="../${item.image}" alt="${item.name}">
+                        <img src="${item.image}" alt="${item.name}">
                         <div class="cart-item-info">
                             <h3>${item.name}</h3>
                             <p class="cart-item-unit">${formatPrice(item.price)} c/u</p>

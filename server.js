@@ -1,5 +1,4 @@
 const express = require("express");
-console.log("ESTE ES MI SERVER");
 const mysql = require("mysql2");
 const path = require("path");
 
@@ -9,24 +8,28 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
-const conexion = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "LogoMARKET1"
+const conexion = mysql.createPool({
+    host: process.env.DB_HOST || "localhost",
+    port: process.env.DB_PORT || 3306,
+    user: process.env.DB_USER || "root",
+    password: process.env.DB_PASSWORD ||"",
+    database: process.env.DB_NAME || "LogoMARKET1",
+    ssl: process.env.DB_CA ? { ca: process.env.DB_CA } : undefined,
+    waitForConnections: true,
+    connectionLimit: 5
 });
 
-conexion.connect((error) => {
+conexion.getConnection((error) => {
     if(error){
-        console.log(error);
+        console.error("Error de conexion", error.message);
     }else{
-        console.log("Conexión exitosa");
+        console.log("Conexión exitosa en la base de datos");
+        conn.release();
     }
 });
 
 
 app.post("/registro", (req, res) => {
-    console.log(req.body);
     const { nombre, correo, password } = req.body;
 
     if (!nombre || !correo || !password) {
@@ -69,7 +72,6 @@ app.post("/registro", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-    console.log(req.body);
     console.log("Entró a la ruta /login");
     const { correo, password } = req.body;
 
@@ -109,7 +111,7 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/obtener-usuarios", (req, res) => {
-    const sql = "SELECT * FROM usuarios ORDER BY id_usuario DESC";
+    const sql = "SELECT id_usuario, nombre, correo, rol FROM usuarios ORDER BY id_usuario DESC";
     
     conexion.query(sql, (error, resultados) => {
         if(error) {
@@ -171,7 +173,7 @@ app.delete("/eliminar-usuario", (req, res) => {
 });
 
 app.get("/usuarios", (req, res) => {
-    conexion.query("SELECT * FROM usuarios", (error, resultados) => {
+    conexion.query("SELECT id_usuario, nombre, correo, rol FROM usuarios", (error, resultados) => {
         if(error){
             console.log(error);
             return res.status(500).send("Error");
@@ -180,7 +182,7 @@ app.get("/usuarios", (req, res) => {
         }
     });
 });
-
+const PORT = process.env.PORT||3000;
 app.listen(3000, () => {
-    console.log("Servidor funcionando");
+    console.log("Servidor funcionando" + PORT);
 });
