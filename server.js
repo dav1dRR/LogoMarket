@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const rutasPerfil = require("./perfil.rutas.js");
 const rutasCompras = require("./compras.rutas.js");
+const verificarsesion = require(".verificarsesion.js");
 
 
 if (!process.env.JWT_SECRET) {
