@@ -5,8 +5,8 @@ const mysql = require("mysql2");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const rutasPerfil = require("./perfil.routes");
-const rutasCompras = require("./compras.routes");
+const rutasPerfil = require("./perfil.rutas.js");
+const rutasCompras = require("./compras.rutas.js");
 
 
 if (!process.env.JWT_SECRET) {
