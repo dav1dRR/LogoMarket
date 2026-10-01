@@ -7,7 +7,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const rutasPerfil = require("./perfil.rutas.js");
 const rutasCompras = require("./compras.rutas.js");
-const verificarsesion = require(".verificarsesion.js");
+const verificarsesion = require("/verificarsesion");
 
 
 if (!process.env.JWT_SECRET) {
@@ -54,6 +54,7 @@ conexion.getConnection((error, conn) => {
 
 app.use("/api/perfil", rutasPerfil(db));
 app.use("/api/compras", rutasCompras(db));
+app.use("/api/compras", verificarsesion, rutasCompras(db));
 
 
 app.post("/registro", async (req, res) => {

@@ -1,7 +1,7 @@
 
 const jwt = require("jsonwebtoken");
 
-module.exports = function verificarSesion(req, res, next) {
+module.exports = function verificarsesion(req, res, next) {
     const cabecera = req.headers.authorization || "";
     const token = cabecera.startsWith("Bearer ") ? cabecera.slice(7) : null;
 
