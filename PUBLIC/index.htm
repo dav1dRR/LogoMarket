@@ -465,10 +465,23 @@
     const usuario = JSON.parse(localStorage.getItem("usuario"));
 
     if (usuario) {
+      if (usuario.rol==="admin"){
         usuarioSesion.innerHTML = `
+        <div class="dropdown"
             <span class="nombre-usuario"> ${usuario.nombre}</span>
+            <ul class="dropdown-lista">
+              <li><a href="admin.html">Administrar usuarios</a></li>
+              <li><a href="perfil.html">Mi perfil</a></li>
+            </ul>
+          </div>
+          <a href="#" onclick="cerrarSesion()">Cerrar sesión</a>
+        `;
+        } else {
+          usuarioSesion.innerHTML = `
+            <a href="perfil.html" class="nombre-usuario">${usuario.nombre}</a>
             <a href="#" onclick="cerrarSesion()">Cerrar sesión</a>
         `;
+        }
 
     } else {
 

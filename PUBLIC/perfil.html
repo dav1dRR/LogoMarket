@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mi cuenta | LogoMarket</title>
+
+<link rel="stylesheet" href="perfilstyles.css">
+</head>
+
+<body>
+
+<header class="topbar">
+    <a class="brand" href="index.htm">LogoMarket</a>
+    <a href="index.htm">Volver a la tienda</a>
+</header>
+
+<main class="panel">
+
+    <aside class="lateral">
+        <div class="identidad">
+            <div class="marca" id="marca" aria-hidden="true">?</div>
+            <div>
+                <strong id="lateral-nombre">Cargando…</strong>
+                <span id="lateral-rol"></span>
+            </div>
+        </div>
+
+        <nav class="pestanas" role="tablist" aria-label="Secciones de tu cuenta">
+            <button role="tab" id="tab-datos" data-seccion="datos" aria-selected="true" aria-controls="sec-datos">Mis datos</button>
+            <button role="tab" id="tab-password" data-seccion="password" aria-selected="false" aria-controls="sec-password">Cambiar contraseña</button>
+            <button role="tab" id="tab-compras" data-seccion="compras" aria-selected="false" aria-controls="sec-compras">Mis compras</button>
+            <button role="tab" id="tab-logos" data-seccion="logos" aria-selected="false" aria-controls="sec-logos" hidden>Mis logos</button>
+        </nav>
+    </aside>
+
+    <div class="contenido">
+
+        <!-- ===== Mis datos ===== -->
+        <section class="seccion" id="sec-datos" role="tabpanel" aria-labelledby="tab-datos">
+            <h1>Mis datos</h1>
+            <p class="ayuda">Actualiza tu nombre. El correo es el que usas para iniciar sesión.</p>
+
+            <dl class="datos-cuenta">
+                <div><dt>Tipo de cuenta</dt><dd id="dato-rol">—</dd></div>
+                <div><dt>Miembro desde</dt><dd id="dato-fecha">—</dd></div>
+            </dl>
+
+            <form id="form-datos" novalidate>
+                <div class="campo">
+                    <label for="nombre">Nombre</label>
+                    <input id="nombre" name="nombre" type="text" maxlength="100" autocomplete="name" required>
+                </div>
+                <div class="campo">
+                    <label for="correo">Correo</label>
+                    <input id="correo" name="correo" type="email" readonly>
+                    <p class="nota">El correo no se puede cambiar desde aquí.</p>
+                </div>
+                <button class="boton" type="submit">Guardar cambios</button>
+                <p class="mensaje" id="msg-datos" role="status"></p>
+            </form>
+        </section>
+
+        <!-- ===== Cambiar contraseña ===== -->
+        <section class="seccion" id="sec-password" role="tabpanel" aria-labelledby="tab-password" hidden>
+            <h1>Cambiar contraseña</h1>
+            <p class="ayuda">Escribe tu contraseña actual y elige una nueva de al menos 8 caracteres.</p>
+
+            <form id="form-password" novalidate>
+                <div class="campo">
+                    <label for="actual">Contraseña actual</label>
+                    <input id="actual" type="password" autocomplete="current-password" required>
+                </div>
+                <div class="campo">
+                    <label for="nueva">Contraseña nueva</label>
+                    <input id="nueva" type="password" autocomplete="new-password" minlength="8" required>
+                </div>
+                <div class="campo">
+                    <label for="confirmar">Repite la contraseña nueva</label>
+                    <input id="confirmar" type="password" autocomplete="new-password" required>
+                </div>
+                <button class="boton" type="submit">Actualizar contraseña</button>
+                <p class="mensaje" id="msg-password" role="status"></p>
+            </form>
+        </section>
+
+        <!-- ===== Mis compras ===== -->
+        <section class="seccion" id="sec-compras" role="tabpanel" aria-labelledby="tab-compras" hidden>
+            <h1>Mis compras</h1>
+            <p class="ayuda">Los logos que has comprado en LogoMarket.</p>
+            <div class="tabla-wrap" id="lista-compras"></div>
+        </section>
+
+        <!-- ===== Mis logos (diseñador y admin) ===== -->
+        <section class="seccion" id="sec-logos" role="tabpanel" aria-labelledby="tab-logos" hidden>
+            <h1>Mis logos</h1>
+            <p class="ayuda">Los logos que tienes publicados para la venta.</p>
+            <div class="tabla-wrap" id="lista-logos"></div>
+        </section>
+
+    </div>
+</main>
+
+<script>
+/* =========================================================
+   CONFIGURACIÓN
+   Si abres el HTML desde el mismo servidor Express, puedes dejar
+   API = "/api". Si usas Live Server u otro puerto, pon la URL completa.
+   ========================================================= */
+const API = "http://localhost:3000/api";
+
+const sesion = JSON.parse(localStorage.getItem("usuario"));
+
+if (!sesion) {
+    window.location.replace("Login.html");
+} else {
+    iniciar();
+}
+
+/* ---------- Utilidades ---------- */
+function esc(texto) {
+    const d = document.createElement("div");
+    d.textContent = texto ?? "";
+    return d.innerHTML;
+}
+
+const formatoPrecio = { format: (valor) => "$" + Number(valor).toFixed(2) };
+
+function formatoFecha(valor) {
+    const f = new Date(valor);
+    return isNaN(f) ? "—" : f.toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" });
+}
+
+const nombresRol = { cliente: "Cliente", disenador: "Diseñador", admin: "Administrador" };
+
+function mostrarMensaje(id, texto, tipo) {
+    const el = document.getElementById(id);
+    el.textContent = texto;
+    el.className = "mensaje " + (tipo || "");
+}
+
+async function api(ruta, opciones = {}) {
+    const res = await fetch(API + ruta, {
+        ...opciones,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + sesion.token
+        }
+    });
+
+    if (res.status === 401) {
+        localStorage.removeItem("usuario");
+        window.location.replace("Login.html");
+        throw new Error("Tu sesión expiró. Inicia sesión de nuevo.");
+    }
+
+    const datos = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(datos.error || "Algo salió mal. Intenta de nuevo.");
+    return datos;
+}
+
+/* ---------- Pestañas ---------- */
+const cargadas = { compras: false, logos: false };
+
+function abrirSeccion(nombre) {
+    document.querySelectorAll(".pestanas button").forEach(b => {
+        b.setAttribute("aria-selected", b.dataset.seccion === nombre ? "true" : "false");
+    });
+    document.querySelectorAll(".seccion").forEach(s => {
+        s.hidden = s.id !== "sec-" + nombre;
+    });
+
+    if (nombre === "compras" && !cargadas.compras) cargarCompras();
+    if (nombre === "logos" && !cargadas.logos) cargarLogos();
+}
+
+/* ---------- Mis datos ---------- */
+async function cargarPerfil() {
+    try {
+        const p = await api("/perfil");
+
+        document.getElementById("nombre").value = p.nombre;
+        document.getElementById("correo").value = p.correo;
+        document.getElementById("dato-rol").textContent = nombresRol[p.rol] || p.rol;
+        document.getElementById("dato-fecha").textContent = formatoFecha(p.fecha_registro);
+
+        pintarIdentidad(p.nombre, p.rol);
+
+        // Solo diseñadores y administradores ven sus logos publicados
+        if (p.rol === "disenador" || p.rol === "admin") {
+            document.getElementById("tab-logos").hidden = false;
+        }
+    } catch (e) {
+        mostrarMensaje("msg-datos", e.message, "error");
+        document.getElementById("lateral-nombre").textContent = sesion.nombre || "Mi cuenta";
+    }
+}
+
+function pintarIdentidad(nombre, rol) {
+    const iniciales = nombre.trim().split(/\s+/).slice(0, 2).map(p => p[0]).join("").toUpperCase();
+    document.getElementById("marca").textContent = iniciales || "?";
+    document.getElementById("lateral-nombre").textContent = nombre;
+    document.getElementById("lateral-rol").textContent = nombresRol[rol] || "";
+}
+
+document.getElementById("form-datos").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const boton = e.target.querySelector("button");
+    const nombre = document.getElementById("nombre").value.trim();
+
+    if (nombre.length < 2) {
+        return mostrarMensaje("msg-datos", "Escribe tu nombre (mínimo 2 letras).", "error");
+    }
+
+    boton.disabled = true;
+    try {
+        await api("/perfil", { method: "PUT", body: JSON.stringify({ nombre }) });
+
+        // Mantener sincronizado el nombre que se ve en el encabezado del sitio
+        sesion.nombre = nombre;
+        localStorage.setItem("usuario", JSON.stringify(sesion));
+
+        pintarIdentidad(nombre, sesion.rol);
+        mostrarMensaje("msg-datos", "Cambios guardados.", "ok");
+    } catch (err) {
+        mostrarMensaje("msg-datos", err.message, "error");
+    } finally {
+        boton.disabled = false;
+    }
+});
+
+/* ---------- Cambiar contraseña ---------- */
+document.getElementById("form-password").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const boton = e.target.querySelector("button");
+    const actual = document.getElementById("actual").value;
+    const nueva = document.getElementById("nueva").value;
+    const confirmar = document.getElementById("confirmar").value;
+
+    if (!actual || !nueva || !confirmar) {
+        return mostrarMensaje("msg-password", "Completa los tres campos.", "error");
+    }
+    if (nueva.length < 8) {
+        return mostrarMensaje("msg-password", "La contraseña nueva debe tener al menos 8 caracteres.", "error");
+    }
+    if (nueva !== confirmar) {
+        return mostrarMensaje("msg-password", "Las contraseñas nuevas no coinciden.", "error");
+    }
+
+    boton.disabled = true;
+    try {
+        await api("/perfil/password", { method: "PUT", body: JSON.stringify({ actual, nueva }) });
+        e.target.reset();
+        mostrarMensaje("msg-password", "Contraseña actualizada.", "ok");
+    } catch (err) {
+        mostrarMensaje("msg-password", err.message, "error");
+    } finally {
+        boton.disabled = false;
+    }
+});
+
+/* ---------- Mis compras ---------- */
+async function cargarCompras() {
+    const cont = document.getElementById("lista-compras");
+    cont.innerHTML = '<p class="vacio">Cargando tus compras…</p>';
+
+    try {
+        const compras = await api("/perfil/compras");
+        cargadas.compras = true;
+
+        if (compras.length === 0) {
+            cont.innerHTML = '<p class="vacio">Todavía no has comprado ningún logo. <a href="index.htm">Explora el catálogo</a>.</p>';
+            return;
+        }
+
+        cont.innerHTML = `
+            <table>
+                <thead>
+                    <tr><th></th><th>Logo</th><th>Fecha</th><th class="num">Precio</th></tr>
+                </thead>
+                <tbody>
+                    ${compras.map(c => `
+                        <tr>
+                            <td>${c.imagen ? `<img class="miniatura" src="${esc(c.imagen)}" alt="">` : '<div class="miniatura"></div>'}</td>
+                            <td>${esc(c.nombre_logo)}</td>
+                            <td>${formatoFecha(c.fecha_compra)}</td>
+                            <td class="num">${formatoPrecio.format(c.precio)}</td>
+                        </tr>`).join("")}
+                </tbody>
+            </table>`;
+    } catch (e) {
+        cont.innerHTML = `<p class="vacio">No pudimos cargar tus compras. ${esc(e.message)}</p>`;
+    }
+}
+
+/* ---------- Mis logos ---------- */
+async function cargarLogos() {
+    const cont = document.getElementById("lista-logos");
+    cont.innerHTML = '<p class="vacio">Cargando tus logos…</p>';
+
+    try {
+        const logos = await api("/perfil/logos");
+        cargadas.logos = true;
+
+        if (logos.length === 0) {
+            cont.innerHTML = '<p class="vacio">Aún no has publicado ningún logo.</p>';
+            return;
+        }
+
+        cont.innerHTML = `
+            <table>
+                <thead>
+                    <tr><th></th><th>Logo</th><th>Categoría</th><th>Estado</th><th class="num">Precio</th></tr>
+                </thead>
+                <tbody>
+                    ${logos.map(l => `
+                        <tr>
+                            <td>${l.imagen ? `<img class="miniatura" src="${esc(l.imagen)}" alt="">` : '<div class="miniatura"></div>'}</td>
+                            <td>${esc(l.nombre_logo)}</td>
+                            <td>${esc(l.nombre_categoria || "Sin categoría")}</td>
+                            <td><span class="etiqueta ${l.estado === "vendido" ? "vendido" : ""}">${l.estado === "vendido" ? "Vendido" : "Disponible"}</span></td>
+                            <td class="num">${formatoPrecio.format(l.precio)}</td>
+                        </tr>`).join("")}
+                </tbody>
+            </table>`;
+    } catch (e) {
+        cont.innerHTML = `<p class="vacio">No pudimos cargar tus logos. ${esc(e.message)}</p>`;
+    }
+}
+
+/* ---------- Inicio ---------- */
+function iniciar() {
+    document.querySelectorAll(".pestanas button").forEach(b => {
+        b.addEventListener("click", () => abrirSeccion(b.dataset.seccion));
+    });
+
+    // Permite abrir una sección directo: perfil.html#compras
+    const inicial = location.hash.replace("#", "");
+    if (["datos", "password", "compras"].includes(inicial)) abrirSeccion(inicial);
+
+    cargarPerfil();
+}
+</script>
+
+</body>
+</html>

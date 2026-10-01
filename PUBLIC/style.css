@@ -565,7 +565,7 @@ body {
 }
 
 #usuarioSesion .nombre-usuario {
-  color: #CFB53B;
+  color: #cfb43d;
   font-weight: 600;
   white-space: nowrap;
   text-transform: capitalize;
@@ -575,5 +575,48 @@ body {
   color: #ffffff;
   text-transform: capitalize;
 }
+#usuarioSesion .dropdown{
+    color: #CFB53B;
+    font-weight: 600;
+    white-space: nowrap;
+    text-transform: capitalize;
 
+}
+.dropdown {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.dropdown-lista {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 190px;
+    background: #CFB53B;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    list-style: none;
+    margin: 0;
+    padding: 1px;
+    box-shadow: 0 4px 12px rgb(3, 20, 255);
+    z-index: 1000;
+    
+}
+
+.dropdown:hover .dropdown-lista {
+    display: block;
+}
+
+.dropdown-lista a {
+    display: block;
+    padding: 10px 14px;
+    color: #333;
+    text-decoration: none;
+}
+
+.dropdown-lista a:hover {
+    background: #19199b;
+}
 
