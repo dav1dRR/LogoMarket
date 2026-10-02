@@ -1,13 +1,7 @@
-// compras.routes.js
-// Finalizar la compra del carrito: registra cada logo en la tabla compras
-// (así aparece luego en "Mis compras" del perfil) y lo marca como vendido.
-//
-// Uso en tu server.js:
-//   const rutasCompras = require("./compras.routes");
-//   app.use("/api/compras", rutasCompras(db));
+
 
 const express = require("express");
-const verificarSesion = require("./verificarSesion");
+const verificarSesion = require("./verificarsesion");
 
 module.exports = function (db) {
     const router = express.Router();
