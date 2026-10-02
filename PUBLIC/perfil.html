@@ -11,6 +11,7 @@
 <body>
 
 <header class="topbar">
+    <img src="Imagenes/LogoMarketLogo.png" alt="">
     <a class="brand" href="index.htm">LogoMarket</a>
     <a href="index.htm">Volver a la tienda</a>
 </header>
@@ -36,7 +37,7 @@
 
     <div class="contenido">
 
-        <!-- ===== Mis datos ===== -->
+        <!--  Mis datos  -->
         <section class="seccion" id="sec-datos" role="tabpanel" aria-labelledby="tab-datos">
             <h1>Mis datos</h1>
             <p class="ayuda">Actualiza tu nombre. El correo es el que usas para iniciar sesión.</p>
@@ -61,7 +62,7 @@
             </form>
         </section>
 
-        <!-- ===== Cambiar contraseña ===== -->
+        <!--  Cambiar contraseña  -->
         <section class="seccion" id="sec-password" role="tabpanel" aria-labelledby="tab-password" hidden>
             <h1>Cambiar contraseña</h1>
             <p class="ayuda">Escribe tu contraseña actual y elige una nueva de al menos 8 caracteres.</p>
@@ -84,7 +85,7 @@
             </form>
         </section>
 
-        <!-- ===== Mis compras ===== -->
+        <!--  Mis compras  -->
         <section class="seccion" id="sec-compras" role="tabpanel" aria-labelledby="tab-compras" hidden>
             <h1>Mis compras</h1>
             <p class="ayuda">Los logos que has comprado en LogoMarket.</p>
@@ -102,11 +103,10 @@
 </main>
 
 <script>
-/* =========================================================
+/* 
    CONFIGURACIÓN
-   Si abres el HTML desde el mismo servidor Express, puedes dejar
-   API = "/api". Si usas Live Server u otro puerto, pon la URL completa.
-   ========================================================= */
+   Se abre el HTML desde el mismo servidor Express, se puede dejar
+   API = "/api". Si usas Live Server u otro puerto, pon la URL completa. */
 const API = "/api";
 
 const sesion = JSON.parse(localStorage.getItem("usuario"));
@@ -159,7 +159,7 @@ async function api(ruta, opciones = {}) {
     return datos;
 }
 
-/* ---------- Pestañas ---------- */
+/*  Pestañas  */
 const cargadas = { compras: false, logos: false };
 
 function abrirSeccion(nombre) {
@@ -174,7 +174,7 @@ function abrirSeccion(nombre) {
     if (nombre === "logos" && !cargadas.logos) cargarLogos();
 }
 
-/* ---------- Mis datos ---------- */
+/*  Mis datos  */
 async function cargarPerfil() {
     try {
         const p = await api("/perfil");
@@ -229,7 +229,7 @@ document.getElementById("form-datos").addEventListener("submit", async (e) => {
     }
 });
 
-/* ---------- Cambiar contraseña ---------- */
+/* Cambiar contraseña */
 document.getElementById("form-password").addEventListener("submit", async (e) => {
     e.preventDefault();
     const boton = e.target.querySelector("button");
@@ -259,7 +259,7 @@ document.getElementById("form-password").addEventListener("submit", async (e) =>
     }
 });
 
-/* ---------- Mis compras ---------- */
+/*  Mis compras  */
 async function cargarCompras() {
     const cont = document.getElementById("lista-compras");
     cont.innerHTML = '<p class="vacio">Cargando tus compras…</p>';
@@ -293,7 +293,7 @@ async function cargarCompras() {
     }
 }
 
-/* ---------- Mis logos ---------- */
+/*  Mis logos */
 async function cargarLogos() {
     const cont = document.getElementById("lista-logos");
     cont.innerHTML = '<p class="vacio">Cargando tus logos…</p>';
@@ -328,7 +328,7 @@ async function cargarLogos() {
     }
 }
 
-/* ---------- Inicio ---------- */
+/*  Inicio */
 function iniciar() {
     document.querySelectorAll(".pestanas button").forEach(b => {
         b.addEventListener("click", () => abrirSeccion(b.dataset.seccion));

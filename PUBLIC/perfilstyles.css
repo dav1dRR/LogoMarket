@@ -45,11 +45,13 @@ a:hover{
     outline: 3px solid var(--dorado-vivo);
     outline-offset: 2px;
 }
-
-/* ---------- Barra superior ---------- */
+.topbar img{
+    width: 8rem;
+    height: 8rem;
+    margin-left: 2rem;
+}
 .topbar{
     display: flex;
-    justify-content: space-between;
     align-items: center;
     padding: 2rem max(2rem, calc((100% - 120rem) / 2));
     background-color: var(--tarjeta);
@@ -65,7 +67,9 @@ a:hover{
     font-weight: 600;
     letter-spacing: -1px;
 }
-
+.topbar > a:last-child{
+    margin-left: auto;
+}
 .brand:hover{
     color: var(--blanco);
 }
@@ -82,7 +86,7 @@ a:hover{
     text-transform: uppercase;
 }
 
-/* ---------- Estructura ---------- */
+
 .panel{
     display: grid;
     grid-template-columns: 28rem 1fr;
@@ -92,7 +96,7 @@ a:hover{
     padding: 0 2rem;
 }
 
-/* ---------- Lateral ---------- */
+
 .lateral{
     align-self: start;
 }
@@ -164,7 +168,6 @@ a:hover{
     display: none;
 }
 
-/* ---------- Contenido ---------- */
 .contenido{
     background-color: var(--tarjeta);
     border-radius: 2rem;
@@ -190,7 +193,7 @@ a:hover{
     display: none;
 }
 
-/* ---------- Formularios ---------- */
+
 .campo{
     max-width: 46rem;
     margin-bottom: 2rem;
@@ -270,7 +273,7 @@ input[readonly]{
     color: var(--error);
 }
 
-/* ---------- Datos de la cuenta ---------- */
+
 .datos-cuenta{
     display: flex;
     flex-wrap: wrap;
@@ -296,7 +299,7 @@ input[readonly]{
     color: var(--dorado);
 }
 
-/* ---------- Tablas ---------- */
+
 .tabla-wrap{
     overflow-x: auto;
 }
@@ -367,7 +370,7 @@ td.num{
     font-weight: 600;
 }
 
-/* ---------- Móvil ---------- */
+/*  Responsive  */
 @media (max-width: 760px){
     .panel{
         grid-template-columns: 1fr;

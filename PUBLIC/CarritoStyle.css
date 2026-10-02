@@ -38,7 +38,7 @@ body{
     margin: 3rem 0 2rem;
 }
 
-/* Header */
+
 .cart-header{
     background-color: var(--bg-color);
     border-bottom: 1px solid #ffffff20;
@@ -87,7 +87,7 @@ body{
     letter-spacing: -.5px;
 }
 
-/* Layout principal */
+
 .cart-main{
     padding-bottom: 6rem;
 }
@@ -190,7 +190,7 @@ body{
     color: #e05a5a;
 }
 
-/* Estado vacío */
+
 .cart-empty{
     background-color: var(--panel-color);
     border-radius: 1rem;
