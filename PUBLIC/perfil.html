@@ -96,6 +96,7 @@
         <section class="seccion" id="sec-logos" role="tabpanel" aria-labelledby="tab-logos" hidden>
             <h1>Mis logos</h1>
             <p class="ayuda">Los logos que tienes publicados para la venta.</p>
+            <p class="mensaje" id="msg-logos" role="status"></p>
             <div class="tabla-wrap" id="lista-logos"></div>
         </section>
 
@@ -124,7 +125,7 @@ function esc(texto) {
     return d.innerHTML;
 }
 
-const formatoPrecio = { format: (valor) => "$" + Number(valor).toFixed(2) };
+const formatoPrecio = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
 
 function formatoFecha(valor) {
     const f = new Date(valor);
@@ -310,17 +311,45 @@ async function cargarLogos() {
         cont.innerHTML = `
             <table>
                 <thead>
-                    <tr><th></th><th>Logo</th><th>Categoría</th><th>Estado</th><th class="num">Precio</th></tr>
+                    <tr><th></th><th>Logo</th><th>Categoría</th><th>Estado</th><th class="num">Precio (USD)</th><th>Acciones</th></tr>
                 </thead>
                 <tbody>
-                    ${logos.map(l => `
-                        <tr>
-                            <td>${l.imagen ? `<img class="miniatura" src="${esc(l.imagen)}" alt="">` : '<div class="miniatura"></div>'}</td>
-                            <td>${esc(l.nombre_logo)}</td>
-                            <td>${esc(l.nombre_categoria || "Sin categoría")}</td>
-                            <td><span class="etiqueta ${l.estado === "vendido" ? "vendido" : ""}">${l.estado === "vendido" ? "Vendido" : "Disponible"}</span></td>
-                            <td class="num">${formatoPrecio.format(l.precio)}</td>
-                        </tr>`).join("")}
+                    ${logos.map(logo => {
+                        const vendido = logo.estado === "vendido";
+                        const noDisponible = logo.estado === "no_disponible";
+                        const claseEstado = vendido ? "vendido" : noDisponible ? "pausado" : "";
+                        const textoEstado = vendido
+                            ? "Vendido"
+                            : noDisponible
+                                ? "No disponible"
+                                : "Disponible";
+                        const acciones = vendido
+                            ? '<span class="nota-accion">No disponible para cambios</span>'
+                            : `
+                                <button
+                                    class="boton-visibilidad ${noDisponible ? "activar" : "pausar"}"
+                                    type="button"
+                                    data-logo-id="${Number(logo.id_logo)}"
+                                    data-disponible="${noDisponible}">
+                                    ${noDisponible ? "Volver a publicar" : "Pausar publicación"}
+                                </button>`;
+
+                        return `
+                            <tr>
+                                <td>
+                                    ${logo.imagen
+                                        ? `<img class="miniatura" src="${esc(logo.imagen)}" alt="">`
+                                        : '<div class="miniatura"></div>'}
+                                </td>
+                                <td>${esc(logo.nombre_logo)}</td>
+                                <td>${esc(logo.nombre_categoria || "Sin categoría")}</td>
+                                <td>
+                                    <span class="etiqueta ${claseEstado}">${textoEstado}</span>
+                                </td>
+                                <td class="num">${formatoPrecio.format(logo.precio)}</td>
+                                <td>${acciones}</td>
+                            </tr>`;
+                    }).join("")}
                 </tbody>
             </table>`;
     } catch (e) {
@@ -328,10 +357,29 @@ async function cargarLogos() {
     }
 }
 
+async function cambiarDisponibilidad(id, disponible, boton) {
+    boton.disabled = true;
+    try {
+        await api(`/perfil/logos/${id}/visibilidad`, {
+            method: "PUT",
+            body: JSON.stringify({ disponible })
+        });
+        await cargarLogos();
+    } catch (e) {
+        mostrarMensaje("msg-logos", e.message || "No se pudo cambiar la disponibilidad del logo.", "error");
+        boton.disabled = false;
+    }
+}
+
 /*  Inicio */
 function iniciar() {
     document.querySelectorAll(".pestanas button").forEach(b => {
         b.addEventListener("click", () => abrirSeccion(b.dataset.seccion));
+    });
+    document.getElementById("lista-logos").addEventListener("click", event => {
+        const boton = event.target.closest(".boton-visibilidad");
+        if (!boton) return;
+        cambiarDisponibilidad(Number(boton.dataset.logoId), boton.dataset.disponible === "true", boton);
     });
 
     // Permite abrir una sección directo: perfil.html#compras

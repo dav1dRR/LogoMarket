@@ -3,10 +3,12 @@ try { require("dotenv").config(); } catch (e) { /* dotenv es opcional */ }
 const express = require("express");
 const mysql = require("mysql2");
 const path = require("path");
+const fs = require("fs");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const rutasPerfil = require("./perfil.rutas.js");
 const rutasCompras = require("./compras.rutas.js");
+const asegurarVisibilidadLogos = require("./logos.schema");
 
 
 
@@ -22,7 +24,7 @@ if (!process.env.JWT_SECRET) {
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.json({ limit: "7mb" }));
 app.use(express.static(path.join(__dirname, "PUBLIC")));
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "PUBLIC", "index.htm"));
@@ -55,13 +57,244 @@ conexion.getConnection((error, conn) => {
 app.use("/api/perfil", rutasPerfil(db));
 app.use("/api/compras", rutasCompras(db));
 
+// Logos activos de diseñadores para el catálogo público.
+app.get("/api/catalogo/logos", async (req, res) => {
+    try {
+        await asegurarVisibilidadLogos(db);
+        const [logos] = await db.query(
+            `SELECT l.id_logo, l.nombre_logo, l.descripcion, l.precio, l.imagen,
+                    u.nombre AS nombre_disenador
+             FROM logos l
+             LEFT JOIN usuarios u ON u.id_usuario = l.id_usuario
+             WHERE l.estado = 'disponible'
+               AND l.visible_catalogo = 1
+               AND l.imagen LIKE '/uploads/logos/%'
+             ORDER BY l.id_logo DESC`
+        );
+        res.json(logos);
+    } catch (error) {
+        console.error("Error al cargar logos del catálogo:", error);
+        res.status(500).json({ error: "No se pudieron cargar los logos publicados." });
+    }
+});
+
+// Publicación de logos: el propietario siempre se toma de la sesión verificada.
+const verificarSesion = require("./verificarsesion");
+app.get("/api/disenador/logos", verificarSesion, async (req, res) => {
+    if (req.usuario.rol !== "disenador") return res.status(403).json({ error: "Acceso solo para diseñadores." });
+    try {
+        await asegurarVisibilidadLogos(db);
+        const [logos] = await db.query(
+            `SELECT id_logo, nombre_logo, descripcion, precio, imagen,
+                    CASE WHEN estado = 'vendido' THEN 'vendido'
+                         WHEN visible_catalogo = 0 THEN 'no_disponible'
+                         ELSE 'disponible' END AS estado
+             FROM logos WHERE id_usuario = ? ORDER BY id_logo DESC`,
+            [req.usuario.id]
+        );
+        res.json(logos);
+    } catch (error) {
+        console.error("Error al cargar logos del diseñador:", error);
+        res.status(500).json({ error: "No se pudieron cargar tus logos." });
+    }
+});
+
+app.get("/api/disenador/logos/:id", verificarSesion, async (req, res) => {
+    if (req.usuario.rol !== "disenador") {
+        return res.status(403).json({ error: "Acceso solo para diseñadores." });
+    }
+    try {
+        const [filas] = await db.query(
+            `SELECT id_logo, nombre_logo, descripcion, precio, imagen, estado
+             FROM logos WHERE id_logo = ? AND id_usuario = ?`,
+            [Number(req.params.id), req.usuario.id]
+        );
+        if (!filas.length) {
+            return res.status(404).json({ error: "No encontramos ese logo en tu cuenta." });
+        }
+        res.json(filas[0]);
+    } catch (error) {
+        console.error("Error al cargar logo para editar:", error);
+        res.status(500).json({ error: "No se pudo cargar el logo para editar." });
+    }
+});
+
+app.put("/api/disenador/logos/:id", verificarSesion, async (req, res) => {
+    if (req.usuario.rol !== "disenador") {
+        return res.status(403).json({ error: "Acceso solo para diseñadores." });
+    }
+    const id = Number(req.params.id);
+    const { nombre, descripcion, precio, imagen } = req.body;
+    const precioNumero = Number(precio);
+    if (
+        !Number.isInteger(id) ||
+        id < 1 ||
+        !nombre?.trim() ||
+        !descripcion?.trim() ||
+        !Number.isFinite(precioNumero) ||
+        precioNumero <= 0
+    ) {
+        return res.status(400).json({ error: "Revisa el nombre, la descripción y el precio del logo." });
+    }
+
+    let nuevaRuta = null;
+    let imagenUrl = null;
+    try {
+        const [actuales] = await db.query(
+            "SELECT imagen, estado FROM logos WHERE id_logo = ? AND id_usuario = ?",
+            [id, req.usuario.id]
+        );
+        if (!actuales.length) {
+            return res.status(404).json({ error: "No encontramos ese logo en tu cuenta." });
+        }
+        if (actuales[0].estado === "vendido") {
+            return res.status(409).json({ error: "No se puede editar un logo que ya fue vendido." });
+        }
+        imagenUrl = actuales[0].imagen;
+
+        if (imagen) {
+            const coincidencia = /^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$/.exec(imagen);
+            if (!coincencia) return res.status(400).json({ error: "La imagen debe ser PNG, JPG o WebP." });
+            const buffer = Buffer.from(coincidencia[2], "base64");
+            if (!buffer.length || buffer.length > 5 * 1024 * 1024) {
+                return res.status(400).json({
+                    error: "La imagen debe pesar máximo 5 MB."
+                });
+            }
+            const extension = coincidencia[1] === "jpeg" ? "jpg" : coincidencia[1];
+            const nombreArchivo = `${Date.now()}-${require("crypto").randomUUID()}.${extension}`;
+            const carpeta = path.join(__dirname, "PUBLIC", "uploads", "logos");
+            await fs.promises.mkdir(carpeta, { recursive: true });
+            nuevaRuta = path.join(carpeta, nombreArchivo);
+            await fs.promises.writeFile(nuevaRuta, buffer, { flag: "wx" });
+            imagenUrl = `/uploads/logos/${nombreArchivo}`;
+        }
+
+        const [resultado] = await db.query(
+            `UPDATE logos
+             SET nombre_logo = ?, descripcion = ?, precio = ?, imagen = ?
+             WHERE id_logo = ? AND id_usuario = ? AND estado <> 'vendido'`,
+            [nombre.trim(), descripcion.trim(), precioNumero, imagenUrl, id, req.usuario.id]
+        );
+        if (resultado.affectedRows === 0) {
+            const [actualizados] = await db.query(
+                `SELECT nombre_logo, descripcion, precio, imagen
+                 FROM logos
+                 WHERE id_logo = ? AND id_usuario = ?`,
+                [id, req.usuario.id]
+            );
+            if (!actualizados.length) {
+                return res.status(404).json({ error: "No encontramos ese logo en tu cuenta." });
+            }
+
+            const datosSinCambios =
+                actualizados[0].imagen === imagenUrl &&
+                actualizados[0].nombre_logo === nombre.trim() &&
+                actualizados[0].descripcion === descripcion.trim() &&
+                Number(actualizados[0].precio) === precioNumero;
+            if (!datosSinCambios) {
+                return res.status(409).json({ error: "No se pudo actualizar el logo." });
+            }
+        }
+
+        if (nuevaRuta && actuales[0].imagen?.startsWith("/uploads/logos/")) {
+            const rutaAnterior = path.join(__dirname, "PUBLIC", actuales[0].imagen.replace(/^\//, ""));
+            await fs.promises.unlink(rutaAnterior).catch(() => {});
+        }
+        res.json({ ok: true, mensaje: "Logo actualizado correctamente." });
+    } catch (error) {
+        if (nuevaRuta) await fs.promises.unlink(nuevaRuta).catch(() => {});
+        console.error("Error al editar logo:", error);
+        res.status(500).json({ error: "No se pudo guardar el logo." });
+    }
+});
+
+app.post("/api/disenador/logos", verificarSesion, async (req, res) => {
+    if (req.usuario.rol !== "disenador") {
+        return res.status(403).json({ error: "Acceso solo para diseñadores." });
+    }
+    const { nombre, descripcion, precio, imagen } = req.body;
+    const precioNumero = Number(precio);
+    if (
+        !nombre?.trim() ||
+        !descripcion?.trim() ||
+        !Number.isFinite(precioNumero) ||
+        precioNumero <= 0 ||
+        !imagen
+    ) {
+        return res.status(400).json({ error: "Completa nombre, descripción, precio e imagen." });
+    }
+    const coincidencia = /^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$/.exec(imagen);
+    if (!coincidencia) {
+        return res.status(400).json({ error: "La imagen debe ser PNG, JPG o WebP." });
+    }
+    const buffer = Buffer.from(coincidencia[2], "base64");
+    if (!buffer.length || buffer.length > 5 * 1024 * 1024) {
+        return res.status(400).json({ error: "La imagen debe pesar máximo 5 MB." });
+    }
+    const extension = coincidencia[1] === "jpeg" ? "jpg" : coincidencia[1];
+    const nombreArchivo = `${Date.now()}-${require("crypto").randomUUID()}.${extension}`;
+    const carpeta = path.join(__dirname, "PUBLIC", "uploads", "logos");
+    let rutaImagenGuardada = null;
+    try {
+        await fs.promises.mkdir(carpeta, { recursive: true });
+        rutaImagenGuardada = path.join(carpeta, nombreArchivo);
+        await fs.promises.writeFile(rutaImagenGuardada, buffer, { flag: "wx" });
+        const imagenUrl = `/uploads/logos/${nombreArchivo}`;
+
+        // Las versiones anteriores de la tabla pueden no tener descripción.
+        const [columnasDescripcion] = await db.query(
+            "SHOW COLUMNS FROM logos LIKE 'descripcion'"
+        );
+        if (columnasDescripcion.length === 0) {
+            await db.query("ALTER TABLE logos ADD COLUMN descripcion TEXT NULL");
+        }
+
+        const [categorias] = await db.query(
+            "SELECT id_categoria FROM categorias ORDER BY id_categoria LIMIT 1"
+        );
+        if (!categorias.length) {
+            await fs.promises.unlink(rutaImagenGuardada);
+            rutaImagenGuardada = null;
+            return res.status(400).json({
+                error: "Agrega una categoría antes de publicar logos."
+            });
+        }
+        await db.query(
+            `INSERT INTO logos
+                (nombre_logo, descripcion, precio, imagen, estado, id_usuario, id_categoria)
+             VALUES (?, ?, ?, ?, 'disponible', ?, ?)`,
+            [nombre.trim(), descripcion.trim(), precioNumero, imagenUrl, req.usuario.id, categorias[0].id_categoria]
+        );
+        rutaImagenGuardada = null;
+        res.status(201).json({ ok: true, mensaje: "Logo publicado correctamente." });
+    } catch (error) {
+        if (rutaImagenGuardada) {
+            await fs.promises.unlink(rutaImagenGuardada).catch(() => {});
+        }
+        console.error("Error al publicar logo:", error);
+        const detalle = process.env.NODE_ENV === "production"
+            ? undefined
+            : error.sqlMessage || error.message;
+        res.status(500).json({
+            error: "No se pudo publicar el logo.",
+            detalle,
+            codigo: error.code
+        });
+    }
+});
+
 
 
 app.post("/registro", async (req, res) => {
-    const { nombre, correo, password } = req.body;
+    const { nombre, correo, password, rol } = req.body;
 
-    if (!nombre || !correo || !password) {
+    if (!nombre || !correo || !password || !rol) {
         return res.status(400).send("Todos los campos son obligatorios.");
+    }
+
+    if (!["cliente", "disenador"].includes(rol)) {
+        return res.status(400).send("Tipo de cuenta inválido.");
     }
 
     const expresionCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -87,8 +320,8 @@ app.post("/registro", async (req, res) => {
         const hash = await bcrypt.hash(password, 10);
 
         await db.query(
-            "INSERT INTO usuarios(nombre, correo, password) VALUES (?, ?, ?)",
-            [nombre, correo, hash]
+            "INSERT INTO usuarios(nombre, correo, password, rol) VALUES (?, ?, ?, ?)",
+            [nombre, correo, hash, rol]
         );
 
         return res.status(201).send("Usuario registrado correctamente.");

@@ -11,6 +11,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const asegurarVisibilidadLogos = require("./logos.schema");
 
 /* ---------------------------------------------------------
    Middleware: verifica el token y deja el usuario en req.usuario
@@ -112,8 +113,13 @@ module.exports = function (db) {
             return res.status(403).json({ error: "No tienes permiso para ver esta sección." });
         }
         try {
+            await asegurarVisibilidadLogos(db);
             const [filas] = await db.query(
-                `SELECT l.id_logo, l.nombre_logo, l.precio, l.imagen, l.estado, c.nombre_categoria
+                `SELECT l.id_logo, l.nombre_logo, l.precio, l.imagen,
+                        CASE WHEN l.estado = 'vendido' THEN 'vendido'
+                             WHEN l.visible_catalogo = 0 THEN 'no_disponible'
+                             ELSE 'disponible' END AS estado,
+                        c.nombre_categoria
                  FROM logos l
                  LEFT JOIN categorias c ON c.id_categoria = l.id_categoria
                  WHERE l.id_usuario = ?
@@ -124,6 +130,37 @@ module.exports = function (db) {
         } catch (e) {
             console.error(e);
             res.status(500).json({ error: "No pudimos cargar tus logos." });
+        }
+    });
+
+    // El diseñador solo puede pausar o volver a publicar sus propios logos.
+    router.put("/logos/:id/visibilidad", async (req, res) => {
+        if (req.usuario.rol !== "disenador" && req.usuario.rol !== "admin") {
+            return res.status(403).json({ error: "Solo un diseñador puede cambiar la disponibilidad de sus logos." });
+        }
+        const id = Number(req.params.id);
+        const disponible = req.body.disponible;
+        if (!Number.isInteger(id) || id < 1 || typeof disponible !== "boolean") {
+            return res.status(400).json({ error: "La solicitud de disponibilidad no es válida." });
+        }
+        try {
+            await asegurarVisibilidadLogos(db);
+            const [resultado] = await db.query(
+                "UPDATE logos SET visible_catalogo = ? WHERE id_logo = ? AND id_usuario = ? AND estado <> 'vendido'",
+                [disponible ? 1 : 0, id, req.usuario.id]
+            );
+            if (resultado.affectedRows === 0) {
+                const [filas] = await db.query(
+                    "SELECT estado FROM logos WHERE id_logo = ? AND id_usuario = ?",
+                    [id, req.usuario.id]
+                );
+                if (!filas.length) return res.status(404).json({ error: "No encontramos ese logo en tu cuenta." });
+                return res.status(409).json({ error: "Un logo vendido no se puede volver a publicar ni pausar." });
+            }
+            res.json({ ok: true, disponible });
+        } catch (e) {
+            console.error("Error al cambiar disponibilidad del logo:", e);
+            res.status(500).json({ error: "No pudimos actualizar la disponibilidad del logo." });
         }
     });
 

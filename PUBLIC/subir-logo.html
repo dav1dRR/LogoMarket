@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Subir logo | LogoMarket</title>
+    <link rel="stylesheet" href="subir-logo.css">
+</head>
+<body>
+    <header class="barra">
+        <img src="Imagenes/LogoMarket2.png" alt="LogoMarket">
+    </header>
+
+    <main class="contenedor">
+        <a class="volver" href="index.htm">← Volver al panel</a>
+
+        <div class="encabezado">
+            <span class="etiqueta">TU TALENTO, TU MARCA</span>
+            <h1 id="tituloPagina">Publica tu próximo éxito</h1>
+            <p class="intro" id="introPagina">
+                Presenta tu diseño a miles de personas. Completa los detalles y deja que tu creatividad hable.
+            </p>
+        </div>
+
+        <div class="zona-publicacion">
+            <form id="formLogo" class="formulario-logo">
+                <div class="titulo-form">
+                    <span>01</span>
+                    <div>
+                        <h2>Detalles del diseño</h2>
+                        <p>Cuéntanos qué hace especial a tu logo</p>
+                    </div>
+                </div>
+
+                <label for="nombre">Nombre del logo</label>
+                <input id="nombre" name="nombre" type="text" maxlength="120" placeholder="Ej. Marca natural" required>
+
+                <label for="descripcion">Descripción</label>
+                <textarea
+                    id="descripcion"
+                    name="descripcion"
+                    rows="4"
+                    maxlength="2000"
+                    placeholder="Describe el concepto, estilo y personalidad de tu diseño"
+                    required></textarea>
+
+                <label for="precio">Precio <span class="moneda">USD</span></label>
+                <div class="precio-wrap">
+                    <span>$</span>
+                    <input id="precio" name="precio" type="number" min="0.01" step="0.01" placeholder="49.99" required>
+                </div>
+
+                <div class="titulo-form titulo-imagen">
+                    <span>02</span>
+                    <div>
+                        <h2>Imagen de portada</h2>
+                        <p>Una buena vista previa ayuda a destacar</p>
+                    </div>
+                </div>
+
+                <label for="imagen" class="zona-archivo">
+                    <span class="icono-subida">↑</span>
+                    <strong id="textoImagen">Elige la imagen de tu logo</strong>
+                    <small id="ayudaImagen">PNG, JPG o WebP · Máximo 5 MB</small>
+                    <input id="imagen" name="imagen" type="file" accept="image/png,image/jpeg,image/webp" required>
+                </label>
+
+                <img id="vistaPrevia" alt="Vista previa del logo" hidden>
+                <button id="btnPublicar" type="submit">
+                    <span id="textoBoton">Publicar logo</span>
+                    <b>→</b>
+                </button>
+                <p id="mensaje" role="status"></p>
+            </form>
+
+            <aside class="tarjeta-vista">
+                <div class="brillo"></div>
+                <span class="vista-etiqueta">VISTA PREVIA</span>
+
+                <div class="marco-logo">
+                    <img id="logoMuestra" src="Imagenes/LogoMarket2.png" alt="Vista previa del diseño">
+                </div>
+
+                <div class="texto-vista">
+                    <span class="categoria-vista">DISEÑO ORIGINAL</span>
+                    <h3 id="muestraNombre">Tu logo, aquí</h3>
+                    <p id="muestraDescripcion">
+                        Tu diseño merece una presentación a la altura. Completa el formulario para empezar.
+                    </p>
+                    <div class="precio-vista">
+                        <span>Precio de venta</span>
+                        <strong id="muestraPrecio">$0.00</strong>
+                    </div>
+                </div>
+
+                <div class="sello">✦ &nbsp; CREADO POR TI</div>
+            </aside>
+        </div>
+    </main>
+
+    <script src="subir-logo.js"></script>
+</body>
+</html>

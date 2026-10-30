@@ -98,6 +98,13 @@ body{
 .container-form span{
     font-size: 12px;
 }
+.container-form .field-label{
+    width: 300px;
+    margin: 2px 0 6px;
+    color: #f3d45b;
+    font-size: 13px;
+    font-weight: 600;
+}
 .container-input{
    
     width: 300px;
@@ -108,8 +115,10 @@ body{
     align-items: center;
     gap: 8px;
     padding: 0 15px;
-    background-color: #eeee;
-
+    background-color: #f4f6fc;
+    border: 1px solid #d5dced;
+    border-radius: 9px;
+    transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
 }
 
 .container-input input{
@@ -118,7 +127,39 @@ body{
     width: 100%;
     height: 100%;
     background-color: inherit;
-    color: black;
+    color: #10224f;
+    font-size: 13px;
+}
+.container-input input::placeholder{
+    color: #78839d;
+    opacity: 1;
+}
+.container-input ion-icon{
+    flex: 0 0 auto;
+    color: #17377e;
+    font-size: 17px;
+}
+.container-input:focus-within{
+    background-color: #fff;
+    border-color: #cfb53b;
+    box-shadow: 0 0 0 3px #cfb53b33;
+}
+.container-input select{
+    width: 100%;
+    height: 100%;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #10224f;
+    font-size: 13px;
+    cursor: pointer;
+}
+.container-input select:invalid{
+    color: #78839d;
+}
+.container-input select option{
+    color: #10224f;
+    background: #fff;
 }
 .container-form a{
     color: #3b66e9;

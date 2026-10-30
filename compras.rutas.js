@@ -2,6 +2,7 @@
 
 const express = require("express");
 const verificarSesion = require("./verificarsesion");
+const asegurarVisibilidadLogos = require("./logos.schema");
 
 module.exports = function (db) {
     const router = express.Router();
@@ -20,12 +21,13 @@ module.exports = function (db) {
         const conexion = await db.getConnection();
 
         try {
+            await asegurarVisibilidadLogos(db);
             await conexion.beginTransaction();
 
             // FOR UPDATE bloquea estas filas: si dos personas compran el mismo
             // logo al mismo tiempo, solo una de las dos compras se completa.
             const [logos] = await conexion.query(
-                `SELECT id_logo, nombre_logo, precio, estado, id_usuario
+                `SELECT id_logo, nombre_logo, precio, estado, id_usuario, visible_catalogo
                  FROM logos
                  WHERE id_logo IN (?) FOR UPDATE`,
                 [ids]
@@ -44,11 +46,13 @@ module.exports = function (db) {
                 });
             }
 
-            const noDisponibles = logos.filter(l => l.estado !== "disponible");
+            const noDisponibles = logos.filter(l => l.estado !== "disponible" || Number(l.visible_catalogo) !== 1);
             if (noDisponibles.length > 0) {
                 await conexion.rollback();
                 return res.status(409).json({
-                    error: "Estos logos ya no están disponibles: " + noDisponibles.map(l => l.nombre_logo).join(", ") + ". Quítalos del carrito."
+                    error: `Estos logos ya no están disponibles: ${noDisponibles
+                        .map(logo => logo.nombre_logo)
+                        .join(", ")}. Quítalos del carrito.`
                 });
             }
 

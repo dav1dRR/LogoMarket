@@ -360,6 +360,49 @@ td.num{
     background-color: #554501;
 }
 
+.etiqueta.pausado {
+    background: #667085;
+    color: #fff;
+}
+
+.boton-visibilidad {
+    padding: .65rem 1rem;
+    border: 0;
+    border-radius: .7rem;
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: filter .2s, transform .2s;
+}
+
+.boton-visibilidad:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+.boton-visibilidad:disabled {
+    opacity: .6;
+    cursor: wait;
+    transform: none;
+}
+
+.boton-visibilidad.pausar {
+    background: #fff0cb;
+    color: #604c08;
+}
+
+.boton-visibilidad.activar {
+    background: #d8f4e3;
+    color: #17643a;
+}
+
+.nota-accion {
+    color: var(--gris);
+    font-size: 1.1rem;
+}
+
 .vacio{
     padding: 4rem 1rem;
     text-align: center;

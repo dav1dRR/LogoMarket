@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,6 +46,15 @@
                 <img src="Imagenes/LogoMarket2.png" alt="">
             <h2>Crear cuenta </h2>
             <p>Únete a la comunidad de LogoMarket</p>
+            <label class="field-label" for="rolRegistro">Quiero registrarme como *</label>
+            <div class="container-input role-input">
+                <ion-icon name="people-outline"></ion-icon>
+                <select id="rolRegistro" name="rol" required>
+                    <option value="" disabled selected>Selecciona tu tipo de cuenta</option>
+                    <option value="cliente">Cliente</option>
+                    <option value="disenador">Diseñador</option>
+                </select>
+            </div>
             <div class="container-input">
                 <ion-icon name="person-outline"></ion-icon>
                 <input type="text" name="nombre" placeholder="Tu nombre completo">

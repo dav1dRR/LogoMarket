@@ -232,8 +232,6 @@ html{
     font-size: 3.5rem;
     font-weight: 500;
     line-height: 1.2;
-
-
 }
 .content-banner a{
     margin-top: 2rem;
@@ -373,7 +371,7 @@ background-image: linear-gradient(#00000080, #00000080),url(Imagenes/alimentos\ 
     margin-bottom: 1rem;
 
 }
-.container-options span{
+.container-options button{
     color: #ffff;
     background-color: #011b72;
     padding: .7rem 3rem;
@@ -381,14 +379,16 @@ background-image: linear-gradient(#00000080, #00000080),url(Imagenes/alimentos\ 
     text-transform: capitalize ;
     border-radius: 2rem;
     cursor: pointer;
+    border:0;
+    font-family:inherit;
 }
 
-.container-options span:hover{
+.container-options button:hover{
     background-color: #CFB53B;
     color: #ffff;
 }
 
-.container-options span.active{
+.container-options button.active{
     background-color: #CFB53B;
     color: #ffff;
 }
@@ -398,12 +398,115 @@ background-image: linear-gradient(#00000080, #00000080),url(Imagenes/alimentos\ 
     grid-template-columns:repeat(auto-fit, minmax(20rem,1fr)) ;
     gap: 3rem;
 }
+.catalogo-vacio {
+    grid-column: 1 / -1;
+    padding: 2rem;
+    color: #d2d9eb;
+    font-size: 1.4rem;
+    text-align: center;
+}
+
 .card-products{
     background-color: #011b72;
     padding: 2rem 3rem;
     border-radius: 0.5rem;
     cursor: pointer;
     box-shadow: 0 0 .2px rgba(0, 0, 0, 0.1);
+}
+.card-logo-simple {
+    cursor: pointer;
+    transition: transform .22s ease, box-shadow .22s ease;
+}
+
+.card-logo-simple:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px #0004;
+}
+
+.card-logo-simple .container-img {
+    display: flex;
+    height: 190px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.card-logo-simple .container-img img {
+    width: 100%;
+    height: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    object-fit: contain;
+    cursor: pointer;
+}
+
+.card-logo-simple .content-card-product {
+    display: block;
+    width: 100%;
+    padding-top: 1.3rem;
+}
+
+.card-logo-simple .content-card-product h3 {
+    display: block;
+    margin: 0;
+    color: #cfb53b;
+    font-size: 1.7rem;
+    text-align: center;
+    cursor: pointer;
+}
+
+.card-logo-simple .content-card-product h3:hover {
+    color: #ffdf00;
+}
+
+.card-logo-simple .content-card-product h3:focus-visible,
+.card-logo-simple .container-img img:focus-visible {
+    outline: 3px solid #ffdf00;
+    outline-offset: 3px;
+}
+
+.card-logo-simple .content-card-product .price {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .8rem;
+    margin: 1rem 0 0;
+    color: #cfb53b;
+    font-size: 1.7rem;
+    font-weight: 600;
+}
+
+.card-logo-simple .content-card-product .price span {
+    margin-left: 0;
+    font-size: 1.25rem;
+}
+
+.boton-carrito-tarjeta {
+    display: flex;
+    width: 3.8rem;
+    height: 3.8rem;
+    align-items: center;
+    justify-content: center;
+    margin: 1.1rem auto 0;
+    padding: .8rem;
+    border: 0;
+    border-radius: 2rem;
+    background: #cfb53b;
+    color: #071744;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+}
+
+.boton-carrito-tarjeta ion-icon {
+    font-size: 1.8rem;
+}
+
+.boton-carrito-tarjeta:hover,
+.boton-carrito-tarjeta.agregado {
+    transform: translateY(-1px);
+    background: #ffdf00;
 }
 
 .container-img{
@@ -446,6 +549,37 @@ background-image: linear-gradient(#00000080, #00000080),url(Imagenes/alimentos\ 
     cursor: pointer;
     transition: all .4s ease;
 }
+.button-group button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: .8rem;
+    border: 1px solid var(--primary-color);
+    border-radius: 50%;
+    background: #021347;
+    color: #fff;
+    cursor: pointer;
+    transition: all .4s ease;
+}
+
+.button-group button:hover {
+    background-color: #cfb53b;
+}
+
+.button-group button ion-icon {
+    color: #fff;
+    font-size: 1.5rem;
+}
+
+.button-group button.favorito-activo {
+    border-color: #ffdf00;
+    background: #cfb53b;
+}
+
+.button-group button.favorito-activo ion-icon {
+    color: #071744;
+}
+
 .button-group span:hover{
     background-color: #CFB53B;
 }
@@ -453,6 +587,134 @@ background-image: linear-gradient(#00000080, #00000080),url(Imagenes/alimentos\ 
 .button-group span ion-icon{
     font-size: 1.5rem;
     color: var(--primary-color);
+}
+.vista-logo-modal {
+    position: fixed;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    inset: 0;
+    background: #020a1fd9;
+    backdrop-filter: blur(5px);
+}
+
+.vista-logo-contenido {
+    position: relative;
+    display: grid;
+    width: min(760px, 100%);
+    grid-template-columns: minmax(220px, 1fr) minmax(220px, .9fr);
+    gap: 24px;
+    padding: 24px;
+    border: 1px solid #cfb53b;
+    border-radius: 18px;
+    background: #021347;
+    box-shadow: 0 22px 70px #0008;
+}
+
+.vista-logo-imagen {
+    width: 100%;
+    height: 300px;
+    padding: 14px;
+    border-radius: 12px;
+    background: #fff;
+    object-fit: contain;
+}
+
+.vista-logo-info {
+    align-self: center;
+    color: #fff;
+}
+
+.vista-logo-info > span {
+    color: #cfb53b;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: .15em;
+}
+
+.vista-logo-info h2 {
+    margin: 10px 0;
+    color: #fff;
+    font-size: 2.4rem;
+}
+
+.vista-logo-info p {
+    color: #d6dced;
+    font-size: 1.3rem;
+    line-height: 1.6;
+}
+
+.vista-logo-info .autor-detalle {
+    margin: 0;
+    color: #f2d85d;
+    font-weight: 600;
+}
+
+.vista-logo-info .descripcion-detalle {
+    margin: 8px 0;
+}
+
+.vista-logo-info strong {
+    display: block;
+    margin-top: 15px;
+    color: #f2d85d;
+    font-size: 2rem;
+}
+
+.modal-agregar-carrito {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    margin-top: 18px;
+    padding: 12px 16px;
+    border: 0;
+    border-radius: 9px;
+    background: #cfb53b;
+    color: #071744;
+    font-family: inherit;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+}
+
+.modal-agregar-carrito:hover {
+    background: #ffdf00;
+    transform: translateY(-1px);
+}
+
+.cerrar-vista-logo {
+    position: absolute;
+    z-index: 1;
+    top: 9px;
+    right: 11px;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 50%;
+    background: #cfb53b;
+    color: #071744;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+@media (max-width: 560px) {
+    .vista-logo-contenido {
+        grid-template-columns: 1fr;
+        padding: 16px;
+    }
+
+    .vista-logo-imagen {
+        height: 220px;
+    }
+
+    .vista-logo-info h2 {
+        font-size: 2rem;
+    }
 }
 
 
@@ -562,4 +824,4 @@ background-image: linear-gradient(#00000080, #00000080),url(Imagenes/alimentos\ 
 .add-cart.added ion-icon{
     color: #2c2401;
 }
- 
+

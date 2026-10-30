@@ -101,7 +101,11 @@
         }
 
         function formatPrice(value) {
-            return `$${value.toFixed(2)}`;
+            const formatoUSD = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            });
+            return formatoUSD.format(Number(value) || 0);
         }
 
         function renderCart() {

@@ -63,13 +63,14 @@ document.addEventListener("DOMContentLoaded", function () {
       const nombre = registroForm.querySelector('input[name="nombre"]').value.trim();
       const correo = registroForm.querySelector('input[name="correo"]').value.trim();
       const password = registroForm.querySelector('input[name="password"]').value.trim();
+      const rol = registroForm.querySelector('select[name="rol"]').value;
       const mensaje = document.getElementById("mensajeRegistro");
 
       try {
         const respuesta = await fetch("/registro", {  
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nombre, correo, password })
+          body: JSON.stringify({ nombre, correo, password, rol })
         });
 
         const texto = await respuesta.text();   

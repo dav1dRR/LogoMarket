@@ -1,0 +1,463 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --navy: #021347;
+    --blue: #011b72;
+    --gold: #cfb53b;
+    --gold-light: #f2d85d;
+    --ink: #10224f;
+    --muted: #6d7891;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    background: radial-gradient(ellipse at 76% 0%, #12347d 0, transparent 34%), var(--navy);
+    color: #fff;
+    font-family: Poppins, sans-serif;
+}
+
+.barra {
+    display: flex;
+    height: 68px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 max(calc((100vw - 1160px) / 2), 24px);
+    background: #011b72;
+    border-bottom: 1px solid #cfb53b66;
+}
+
+.barra img {
+    width: 220px;
+    height: 64px;
+    object-fit: contain;
+}
+
+.barra a,
+.volver {
+    color: var(--gold-light);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.contenedor {
+    width: min(1080px, calc(100% - 40px));
+    margin: 30px auto 56px;
+}
+
+.volver {
+    display: inline-block;
+    margin-bottom: 19px;
+}
+
+.encabezado {
+    margin-bottom: 23px;
+}
+
+.etiqueta {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--gold-light);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .18em;
+}
+
+.encabezado h1 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(27px, 4vw, 39px);
+    letter-spacing: -.03em;
+    line-height: 1.2;
+}
+
+.intro {
+    max-width: 630px;
+    margin: 8px 0 0;
+    color: #c5cde0;
+    font-size: 13px;
+}
+
+.zona-publicacion {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr);
+    align-items: start;
+    gap: 22px;
+}
+
+.formulario-logo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px 26px 21px;
+    border: 1px solid #d8c45d55;
+    border-radius: 15px;
+    background: #fdfdfd;
+    box-shadow: 0 16px 45px #0003;
+    color: var(--ink);
+}
+
+.titulo-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e8ebf2;
+}
+
+.titulo-form > span {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 10px;
+    background: #fff7d7;
+    color: #937b12;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.titulo-form h2 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 15px;
+}
+
+.titulo-form p {
+    margin: 1px 0 0;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.formulario-logo label:not(.zona-archivo) {
+    margin-top: 5px;
+    color: #26385f;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.formulario-logo input:not([type="file"]),
+.formulario-logo textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d9deea;
+    border-radius: 8px;
+    outline: none;
+    background: #f8f9fc;
+    color: var(--ink);
+    font: 12px Poppins, sans-serif;
+    transition: .2s;
+}
+
+.formulario-logo input:focus,
+.formulario-logo textarea:focus {
+    border-color: var(--gold);
+    background: #fff;
+    box-shadow: 0 0 0 3px #cfb53b24;
+}
+
+.formulario-logo textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.moneda {
+    float: right;
+    color: #8791a7;
+    font-size: 10px;
+}
+
+.precio-wrap {
+    position: relative;
+}
+
+.precio-wrap > span {
+    position: absolute;
+    top: 9px;
+    left: 12px;
+    color: #79839b;
+    font-size: 13px;
+}
+
+.precio-wrap input {
+    padding-left: 28px !important;
+}
+
+.titulo-imagen {
+    margin-top: 10px;
+}
+
+.zona-archivo {
+    display: flex;
+    min-height: 94px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 14px;
+    border: 1px dashed #b9c1d3;
+    border-radius: 9px;
+    background: #f8f9fc;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.zona-archivo:hover {
+    border-color: var(--gold);
+    background: #fffdf2;
+}
+
+.icono-subida {
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    border-radius: 50%;
+    background: #fff3bd;
+    color: #89720c;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.zona-archivo strong {
+    color: var(--ink);
+    font-size: 11px;
+}
+
+.zona-archivo small {
+    color: var(--muted);
+    font-size: 9px;
+}
+
+.zona-archivo input {
+    max-width: 220px;
+    margin-top: 5px;
+    color: #67728b;
+    font: 10px Poppins, sans-serif;
+}
+
+#vistaPrevia {
+    align-self: center;
+    width: 90px;
+    height: 75px;
+    padding: 5px;
+    border: 1px solid #e0e3eb;
+    border-radius: 8px;
+    background: #fff;
+    object-fit: contain;
+}
+
+#vistaPrevia[hidden] {
+    display: none;
+}
+
+#btnPublicar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+    padding: 12px 15px;
+    border: 0;
+    border-radius: 8px;
+    background: linear-gradient(100deg, #cfb53b, #e5ca4a);
+    box-shadow: 0 5px 13px #cfb53b40;
+    color: var(--ink);
+    font: 700 12px Poppins, sans-serif;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+}
+
+#btnPublicar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 18px #cfb53b66;
+}
+
+#btnPublicar b {
+    font-size: 17px;
+}
+
+#btnPublicar:disabled {
+    opacity: .65;
+    cursor: wait;
+}
+
+#mensaje {
+    display: none;
+    margin: 1px 0 0;
+    padding: 10px;
+    border-radius: 7px;
+    font-size: 11px;
+}
+
+#mensaje.visible {
+    display: block;
+}
+
+#mensaje.error {
+    background: #fce8e8;
+    color: #982f2f;
+}
+
+#mensaje.ok {
+    background: #e1f3e8;
+    color: #1d6939;
+}
+
+.tarjeta-vista {
+    position: sticky;
+    top: 20px;
+    min-height: 412px;
+    overflow: hidden;
+    padding: 20px;
+    border: 1px solid #e0c64466;
+    border-radius: 15px;
+    background: linear-gradient(150deg, #0b2b79, #011347 72%);
+    box-shadow: 0 16px 45px #0003;
+    color: #fff;
+}
+
+.brillo {
+    position: absolute;
+    top: -120px;
+    right: -90px;
+    width: 230px;
+    height: 230px;
+    border-radius: 50%;
+    background: #cfb53b26;
+    filter: blur(2px);
+}
+
+.vista-etiqueta {
+    position: relative;
+    color: #e8cd4c;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .16em;
+}
+
+.marco-logo {
+    position: relative;
+    display: grid;
+    width: 100%;
+    height: 172px;
+    place-items: center;
+    overflow: hidden;
+    margin: 15px auto;
+    border: 1px solid #ffffff22;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #fff, #f0f1f5);
+}
+
+.marco-logo img {
+    width: 100%;
+    height: 100%;
+    padding: 18px;
+    object-fit: contain;
+}
+
+.texto-vista {
+    position: relative;
+}
+
+.categoria-vista {
+    color: #e9ce4c;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: .12em;
+}
+
+.texto-vista h3 {
+    margin: 4px 0;
+    color: #fff;
+    font-size: 19px;
+}
+
+.texto-vista p {
+    min-height: 38px;
+    margin: 0;
+    color: #c7d0e5;
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+.precio-vista {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 11px;
+    border-top: 1px solid #ffffff26;
+}
+
+.precio-vista span {
+    color: #c7d0e5;
+    font-size: 10px;
+}
+
+.precio-vista strong {
+    color: #f1d44e;
+    font-size: 13px;
+}
+
+.sello {
+    position: absolute;
+    right: 20px;
+    bottom: 14px;
+    color: #c5cde0;
+    font-size: 8px;
+    letter-spacing: .12em;
+}
+
+@media (max-width: 760px) {
+    .zona-publicacion {
+        grid-template-columns: 1fr;
+    }
+
+    .tarjeta-vista {
+        position: relative;
+        top: 0;
+        min-height: 0;
+    }
+
+    .marco-logo {
+        height: 190px;
+    }
+
+    .formulario-logo {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 560px) {
+    .contenedor {
+        padding: 24px 19px;
+    }
+
+    .contenedor h1 {
+        font-size: 26px;
+    }
+}
+
+@media (max-width: 420px) {
+    .contenedor {
+        width: calc(100% - 26px);
+    }
+
+    .barra {
+        padding: 0 16px;
+    }
+
+    .encabezado h1 {
+        font-size: 27px;
+    }
+
+    .formulario-logo {
+        padding: 18px 15px;
+    }
+}

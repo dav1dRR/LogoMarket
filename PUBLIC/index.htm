@@ -56,6 +56,19 @@
       </div> 
 
       <div class="header-content container">
+        <section id="panelDisenador" class="panel-disenador" hidden>
+          <div class="panel-disenador-cabecera">
+            <div>
+              <span class="panel-etiqueta">ESPACIO DE CREADOR</span>
+              <h2>Mis logos publicados</h2>
+              <p>Administra tus diseños y publica nuevas creaciones.</p>
+            </div>
+            <a class="boton-subir-logo" href="subir-logo.html">＋ Subir logo</a>
+          </div>
+          <div id="logosDisenador" class="logos-disenador">
+            <p>Cargando tus logos…</p>
+          </div>
+        </section>
         <div class="swiper mySwiper-1">
           <div class="swiper-wrapper">
             <div class="swiper-slide">
@@ -465,7 +478,15 @@
     const usuario = JSON.parse(localStorage.getItem("usuario"));
 
     if (usuario) {
-      if (usuario.rol==="admin"){
+      if (usuario.rol === "disenador") {
+        const panel = document.getElementById("panelDisenador");
+        panel.hidden = false;
+        cargarLogosDisenador(usuario);
+        usuarioSesion.innerHTML = `
+          <a href="perfil.html" class="nombre-usuario">${usuario.nombre}</a>
+          <a href="#" onclick="cerrarSesion()">Cerrar sesión</a>
+        `;
+      } else if (usuario.rol==="admin"){
         usuarioSesion.innerHTML = `
         <div class="dropdown"
             <span class="nombre-usuario"> ${usuario.nombre}</span>
@@ -493,6 +514,69 @@
     function cerrarSesion() {
         localStorage.removeItem("usuario");
         window.location.href = "index.htm";
+    }
+
+    async function cargarLogosDisenador(usuario) {
+      const contenedor = document.getElementById("logosDisenador");
+      const escapar = valor => String(valor ?? "").replace(/[&<>"']/g, caracter => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+      }[caracter]));
+      const formatoUSD = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD"
+      });
+      const nombresEstado = {
+        disponible: "Disponible",
+        no_disponible: "No disponible",
+        vendido: "Vendido"
+      };
+
+      try {
+        const respuesta = await fetch("/api/disenador/logos", {
+          headers: { Authorization: `Bearer ${usuario.token}` }
+        });
+        const logos = await respuesta.json();
+        if (!respuesta.ok) {
+          throw new Error(logos.error || "No se pudieron cargar tus logos.");
+        }
+
+        if (!logos.length) {
+          contenedor.innerHTML = `
+            <p class="sin-logos">
+              Todavía no has publicado logos. ¡Sube tu primera creación!
+            </p>`;
+          return;
+        }
+
+        contenedor.innerHTML = logos.map(logo => {
+          const id = Number(logo.id_logo);
+          const estado = nombresEstado[logo.estado] || escapar(logo.estado);
+          const editarDeshabilitado = logo.estado === "vendido"
+            ? 'aria-disabled="true" tabindex="-1"'
+            : "";
+
+          return `
+            <article class="logo-disenador-card">
+              <img src="${escapar(logo.imagen)}" alt="Logo ${escapar(logo.nombre_logo)}">
+              <div class="logo-disenador-info">
+                <h3>${escapar(logo.nombre_logo)}</h3>
+                <p>${escapar(logo.descripcion || "")}</p>
+                <strong>${formatoUSD.format(Number(logo.precio))}</strong>
+                <span class="estado-logo">${estado}</span>
+                <a class="editar-logo" href="subir-logo.html?editar=${id}" ${editarDeshabilitado}>
+                  Editar
+                </a>
+              </div>
+            </article>`;
+        }).join("");
+      } catch (error) {
+        contenedor.innerHTML = `
+          <p class="sin-logos">${escapar(error.message)}</p>`;
+      }
     }
 </script>
     </script>
