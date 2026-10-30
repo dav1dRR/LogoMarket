@@ -429,7 +429,7 @@ background-image: linear-gradient(#00000080, #00000080),url(Imagenes/alimentos\ 
     align-items: center;
     justify-content: center;
     border-radius: 8px;
-    background: #fff;
+    background: #011b72;
 }
 
 .card-logo-simple .container-img img {
@@ -437,6 +437,7 @@ background-image: linear-gradient(#00000080, #00000080),url(Imagenes/alimentos\ 
     height: 100%;
     padding: 12px;
     border-radius: 8px;
+    background: transparent;
     object-fit: contain;
     cursor: pointer;
 }
@@ -618,7 +619,7 @@ background-image: linear-gradient(#00000080, #00000080),url(Imagenes/alimentos\ 
     height: 300px;
     padding: 14px;
     border-radius: 12px;
-    background: #fff;
+    background: #011b72;
     object-fit: contain;
 }
 
