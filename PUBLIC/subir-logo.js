@@ -82,7 +82,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       const datos = await respuesta.json();
       if (!respuesta.ok) {
-        const errorServidor = [datos.error, datos.detalle].filter(Boolean).join(" ");
+        const codigoError = datos.codigo ? ` (código: ${datos.codigo})` : "";
+        const errorServidor = [datos.error, datos.detalle].filter(Boolean).join(" ") + codigoError;
         throw new Error(errorServidor || "No se pudo publicar el logo.");
       }
 

@@ -22,9 +22,13 @@ if (!process.env.JWT_SECRET) {
 }
 
 const app = express();
+const directorioLogos = process.env.UPLOADS_DIR
+    ? path.resolve(process.env.UPLOADS_DIR)
+    : path.join(__dirname, "PUBLIC", "uploads", "logos");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ limit: "7mb" }));
+app.use("/uploads/logos", express.static(directorioLogos));
 app.use(express.static(path.join(__dirname, "PUBLIC")));
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "PUBLIC", "index.htm"));
@@ -140,6 +144,13 @@ app.put("/api/disenador/logos/:id", verificarSesion, async (req, res) => {
     let nuevaRuta = null;
     let imagenUrl = null;
     try {
+        const [columnasDescripcion] = await db.query(
+            "SHOW COLUMNS FROM logos LIKE 'descripcion'"
+        );
+        if (columnasDescripcion.length === 0) {
+            await db.query("ALTER TABLE logos ADD COLUMN descripcion TEXT NULL");
+        }
+
         const [actuales] = await db.query(
             "SELECT imagen, estado FROM logos WHERE id_logo = ? AND id_usuario = ?",
             [id, req.usuario.id]
@@ -163,9 +174,8 @@ app.put("/api/disenador/logos/:id", verificarSesion, async (req, res) => {
             }
             const extension = coincidencia[1] === "jpeg" ? "jpg" : coincidencia[1];
             const nombreArchivo = `${Date.now()}-${require("crypto").randomUUID()}.${extension}`;
-            const carpeta = path.join(__dirname, "PUBLIC", "uploads", "logos");
-            await fs.promises.mkdir(carpeta, { recursive: true });
-            nuevaRuta = path.join(carpeta, nombreArchivo);
+            await fs.promises.mkdir(directorioLogos, { recursive: true });
+            nuevaRuta = path.join(directorioLogos, nombreArchivo);
             await fs.promises.writeFile(nuevaRuta, buffer, { flag: "wx" });
             imagenUrl = `/uploads/logos/${nombreArchivo}`;
         }
@@ -198,14 +208,17 @@ app.put("/api/disenador/logos/:id", verificarSesion, async (req, res) => {
         }
 
         if (nuevaRuta && actuales[0].imagen?.startsWith("/uploads/logos/")) {
-            const rutaAnterior = path.join(__dirname, "PUBLIC", actuales[0].imagen.replace(/^\//, ""));
+            const rutaAnterior = path.join(directorioLogos, path.basename(actuales[0].imagen));
             await fs.promises.unlink(rutaAnterior).catch(() => {});
         }
         res.json({ ok: true, mensaje: "Logo actualizado correctamente." });
     } catch (error) {
         if (nuevaRuta) await fs.promises.unlink(nuevaRuta).catch(() => {});
         console.error("Error al editar logo:", error);
-        res.status(500).json({ error: "No se pudo guardar el logo." });
+        res.status(500).json({
+            error: "No se pudo guardar el logo.",
+            codigo: error.code || "ERROR_EDICION"
+        });
     }
 });
 
@@ -234,11 +247,10 @@ app.post("/api/disenador/logos", verificarSesion, async (req, res) => {
     }
     const extension = coincidencia[1] === "jpeg" ? "jpg" : coincidencia[1];
     const nombreArchivo = `${Date.now()}-${require("crypto").randomUUID()}.${extension}`;
-    const carpeta = path.join(__dirname, "PUBLIC", "uploads", "logos");
     let rutaImagenGuardada = null;
     try {
-        await fs.promises.mkdir(carpeta, { recursive: true });
-        rutaImagenGuardada = path.join(carpeta, nombreArchivo);
+        await fs.promises.mkdir(directorioLogos, { recursive: true });
+        rutaImagenGuardada = path.join(directorioLogos, nombreArchivo);
         await fs.promises.writeFile(rutaImagenGuardada, buffer, { flag: "wx" });
         const imagenUrl = `/uploads/logos/${nombreArchivo}`;
 
